@@ -36,26 +36,31 @@ with st.sidebar:
 # ------------------------------------------------------------------
 #  Cached helpers
 # ------------------------------------------------------------------
+import streamlit as st
+import cloudpickle
+
+# Load model using cached resources
 @st.cache_resource
 def load_model():
     with open("rf_model.pkl", "rb") as f:
-        return pickle.load(f)
+        return cloudpickle.load(f)
 
 @st.cache_resource
 def load_scaler():
     with open("scaler.pkl", "rb") as f:
-        return pickle.load(f)
+        return cloudpickle.load(f)
 
 @st.cache_resource
 def load_encoders():
     with open("encoders.pkl", "rb") as f:
-        return pickle.load(f)
+        return cloudpickle.load(f)
 
-
+# Try loading models and setting expected features
 try:
     model = load_model()
     scaler = load_scaler()
     label_encoders = load_encoders()
+    
     EXPECTED_FEATURES = (
         model.feature_names_in_.tolist()
         if hasattr(model, "feature_names_in_")
@@ -72,7 +77,7 @@ try:
         ]
     )
 except Exception as e:
-    st.error(f"Model files not found: {e}")
+    st.error(f"❌ Model files could not be loaded: {e}")
     st.stop()
 
 # ------------------------------------------------------------------
